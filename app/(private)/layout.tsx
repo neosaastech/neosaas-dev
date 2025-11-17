@@ -1,7 +1,17 @@
 import { PrivateSidebar } from "@/components/private-dashboard/sidebar"
 import { PrivateHeader } from "@/components/private-dashboard/header"
+import { getSession } from '@auth0/nextjs-auth0'
+import { redirect } from 'next/navigation'
 
-export default function PrivateLayout({ children }: { children: React.ReactNode }) {
+export default async function PrivateLayout({ children }: { children: React.ReactNode }) {
+  // Vérifier si l'utilisateur est authentifié
+  const session = await getSession()
+
+  // Rediriger vers login si non authentifié
+  if (!session?.user) {
+    redirect('/auth/login')
+  }
+
   return (
     <div className="flex h-screen">
       <PrivateSidebar />

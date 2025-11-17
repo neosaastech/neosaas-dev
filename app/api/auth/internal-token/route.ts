@@ -1,11 +1,11 @@
-import { getSession } from '@auth0/nextjs-auth0/server';
+import { auth0 } from '@/lib/auth0';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   try {
     // 1. Verify Auth0 session
-    const session = await getSession();
+    const session = await auth0.getSession();
 
     if (!session || !session.user) {
       return NextResponse.json(

@@ -196,16 +196,22 @@ export async function GET() {
 
 ## 🛣️ Available Routes
 
-### Auth Routes (provided by Auth0 SDK)
-- `/api/auth/login` - Login page
-- `/api/auth/logout` - Logout
-- `/api/auth/callback` - Auth0 callback
-- `/api/auth/me` - Get current user info
+### How Auth Routes Work
 
-### Custom Routes
-- `/api/auth/internal-token` - Get internal JWT token
-- `/api/protected` - Example protected API route
-- `/auth/login` - Custom login page
+The Auth0 middleware automatically mounts all authentication routes when `auth0.middleware(request)` is called in `proxy.ts`. **No additional API route files are needed for authentication**.
+
+The middleware handles these routes automatically:
+- `/api/auth/login` - Initiates login flow
+- `/api/auth/logout` - Logs out the user
+- `/api/auth/callback` - Handles Auth0 callback
+- `/api/auth/profile` - Returns user profile data
+
+### Custom Routes (created manually)
+- `/api/auth/internal-token` - Generate internal JWT token (custom implementation)
+- `/api/protected` - Example protected API route (custom implementation)
+- `/auth/login` - Custom login page UI (custom implementation)
+
+**Note**: Do not create `app/api/auth/[auth0]/route.ts` - the middleware handles all auth routes automatically!
 
 ## 🧪 Testing
 
@@ -241,19 +247,21 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ├── app/
 │   ├── api/
 │   │   ├── auth/
-│   │   │   ├── [auth0]/route.ts       # Auth0 handler
-│   │   │   └── internal-token/route.ts # JWT generator
+│   │   │   └── internal-token/route.ts # JWT generator (custom)
 │   │   └── protected/route.ts          # Example protected API
 │   └── auth/
-│       └── login/page.tsx              # Custom login page
+│       └── login/page.tsx              # Custom login page UI
 ├── lib/
+│   ├── auth0.ts                        # Auth0Client instance (REQUIRED)
 │   ├── auth.ts                         # Server-side auth utilities
 │   └── auth-client.ts                  # Client-side auth helpers
 ├── components/
 │   └── auth/
 │       └── user-profile.tsx            # User profile component
-└── proxy.ts                            # Authentication proxy
+└── proxy.ts                            # Authentication proxy (mounts auth routes)
 ```
+
+**Important**: The `proxy.ts` middleware automatically handles all Auth0 routes. Do not create `app/api/auth/[auth0]/route.ts`!
 
 ## 🔄 Migration from Auth0-only to Hybrid System
 

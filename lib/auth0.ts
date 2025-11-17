@@ -2,7 +2,6 @@ import { Auth0Client } from '@auth0/nextjs-auth0/server'
 import { db } from './db'
 import { users } from './schema'
 import { eq } from 'drizzle-orm'
-import { randomUUID } from 'crypto'
 
 export const auth0 = new Auth0Client({
   secret: process.env.AUTH0_SECRET!,
@@ -44,7 +43,7 @@ export const auth0 = new Auth0Client({
       // Créer si inexistant
       if (existingUsers.length === 0) {
         const newUser = {
-          id: randomUUID(),
+          id: crypto.randomUUID(),
           email,
           name: name || null,
           auth0Id,

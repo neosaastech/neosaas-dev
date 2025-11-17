@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreditCard, Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 interface PurchaseCreditsFormProps {
   externalCustomerId: string;
@@ -26,7 +26,6 @@ export function PurchaseCreditsForm({ externalCustomerId, onSuccess }: PurchaseC
   const [selectedPackage, setSelectedPackage] = useState('100');
   const [customAmount, setCustomAmount] = useState('');
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const handlePurchase = async () => {
     try {
@@ -37,10 +36,8 @@ export function PurchaseCreditsForm({ externalCustomerId, onSuccess }: PurchaseC
         : CREDIT_PACKAGES.find(p => p.value === selectedPackage)?.credits || 0;
 
       if (!credits || parseFloat(credits.toString()) <= 0) {
-        toast({
-          title: "Invalid amount",
+        toast.error("Invalid amount", {
           description: "Please enter a valid credit amount",
-          variant: "destructive",
         });
         return;
       }
@@ -83,8 +80,7 @@ export function PurchaseCreditsForm({ externalCustomerId, onSuccess }: PurchaseC
         throw new Error(error.error || 'Failed to purchase credits');
       }
 
-      toast({
-        title: "Success!",
+      toast.success("Success!", {
         description: `${credits} credits have been added to your account`,
       });
 
@@ -93,10 +89,8 @@ export function PurchaseCreditsForm({ externalCustomerId, onSuccess }: PurchaseC
       }
     } catch (error) {
       console.error('Purchase error:', error);
-      toast({
-        title: "Purchase failed",
+      toast.error("Purchase failed", {
         description: error instanceof Error ? error.message : 'Unknown error',
-        variant: "destructive",
       });
     } finally {
       setLoading(false);

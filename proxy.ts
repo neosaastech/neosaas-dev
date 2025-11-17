@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
 
   const isMaintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true'
-  
+
   if (isMaintenanceMode && path !== '/(errors)/maintenance') {
     return NextResponse.redirect(new URL('/(errors)/maintenance', request.url))
   }

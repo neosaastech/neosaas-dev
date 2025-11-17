@@ -1,24 +1,25 @@
-// middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname
 
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  const isMaintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true'
+  
+  if (isMaintenanceMode && path !== '/(errors)/maintenance') {
+    return NextResponse.redirect(new URL('/(errors)/maintenance', request.url))
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { role: string };
-    if (decoded.role !== 'ADMIN' && request.nextUrl.pathname.startsWith('/admin')) {
-      return NextResponse.redirect(new URL('/unauthorized', request.url));
-    }
-  } catch (e) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  // If we're in maintenance page but maintenance mode is off, redirect to home
+  if (!isMaintenanceMode && path === '/(errors)/maintenance') {
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
-  return NextResponse.next();
+  return NextResponse.next()
 }
 
+export const config = {
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+}

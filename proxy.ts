@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getSession } from '@auth0/nextjs-auth0/edge'
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
@@ -21,11 +20,14 @@ export async function proxy(request: NextRequest) {
   const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route))
 
   if (isProtectedRoute) {
-    const session = await getSession(request)
+    // Check for Auth0 session cookie
+    const sessionCookie = request.cookies.get('appSession')
 
-    if (!session || !session.user) {
+    if (!sessionCookie) {
       // Redirect to login if not authenticated
-      return NextResponse.redirect(new URL('/api/auth/login', request.url))
+      const loginUrl = new URL('/api/auth/login', request.url)
+      loginUrl.searchParams.set('returnTo', path)
+      return NextResponse.redirect(loginUrl)
     }
   }
 

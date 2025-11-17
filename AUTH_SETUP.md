@@ -90,7 +90,7 @@ openssl rand -hex 32
 
 ```tsx
 // app/dashboard/page.tsx
-import { getSession } from '@auth0/nextjs-auth0';
+import { getSession } from '@auth0/nextjs-auth0/server';
 import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
@@ -152,7 +152,7 @@ export default function DataFetcher() {
 
 ```tsx
 // app/api/my-protected-route/route.ts
-import { getSession } from '@auth0/nextjs-auth0';
+import { getSession } from '@auth0/nextjs-auth0/server';
 import { NextResponse } from 'next/server';
 
 export async function GET() {

@@ -86,15 +86,28 @@ openssl rand -hex 32
 
 ## 🚀 Usage Examples
 
+### Auth0 Client Setup
+
+First, the Auth0 client is initialized in `lib/auth0.ts`:
+
+```tsx
+// lib/auth0.ts
+import { Auth0Client } from '@auth0/nextjs-auth0/server';
+
+export const auth0 = new Auth0Client();
+```
+
+This instance is used throughout the application for all Auth0 operations.
+
 ### Protected Page Example
 
 ```tsx
 // app/dashboard/page.tsx
-import { getSession } from '@auth0/nextjs-auth0/server';
+import { auth0 } from '@/lib/auth0';
 import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
-  const session = await getSession();
+  const session = await auth0.getSession();
 
   if (!session) {
     redirect('/api/auth/login');
@@ -152,11 +165,11 @@ export default function DataFetcher() {
 
 ```tsx
 // app/api/my-protected-route/route.ts
-import { getSession } from '@auth0/nextjs-auth0/server';
+import { auth0 } from '@/lib/auth0';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const session = await getSession();
+  const session = await auth0.getSession();
 
   if (!session) {
     return NextResponse.json(

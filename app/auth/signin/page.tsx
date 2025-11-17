@@ -19,7 +19,7 @@ export default function LoginPage() {
           </div>
           <div className="grid gap-4">
             <div className="grid gap-4">
-              <Link href="/api/auth/login">
+              <a href="/auth/login">
                 <Button variant="outline" className="w-full bg-transparent">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@ export default function LoginPage() {
                   </svg>
                   Continue with Google
                 </Button>
-              </Link>
+              </a>
             </div>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

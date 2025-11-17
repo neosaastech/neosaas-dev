@@ -1,0 +1,63 @@
+import { Auth0Client } from '@auth0/nextjs-auth0/server'
+import { db } from './db'
+import { users } from './schema'
+import { eq } from 'drizzle-orm'
+import { randomUUID } from 'crypto'
+
+export const auth0 = new Auth0Client({
+  secret: process.env.AUTH0_SECRET!,
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL!,
+  baseURL: process.env.AUTH0_BASE_URL!,
+  clientID: process.env.AUTH0_CLIENT_ID!,
+  clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+  routes: {
+    callback: '/auth/callback',
+    postLogoutRedirect: '/auth/signin',
+  },
+  session: {
+    rolling: true,
+    rollingDuration: 24 * 60 * 60, // 24 hours
+  },
+  onCallback: async (session) => {
+    // Créer l'utilisateur dans Neon après authentification réussie
+    try {
+      if (!session?.user) {
+        return
+      }
+
+      const auth0Id = session.user.sub
+      const email = session.user.email
+      const name = session.user.name
+
+      if (!auth0Id || !email) {
+        console.error('Missing required user data from Auth0')
+        return
+      }
+
+      // Vérifier si l'utilisateur existe
+      const existingUsers = await db
+        .select()
+        .from(users)
+        .where(eq(users.auth0Id, auth0Id))
+        .limit(1)
+
+      // Créer si inexistant
+      if (existingUsers.length === 0) {
+        const newUser = {
+          id: randomUUID(),
+          email,
+          name: name || null,
+          auth0Id,
+        }
+
+        await db.insert(users).values(newUser)
+        console.log('✅ New user created:', { id: newUser.id, email: newUser.email })
+      } else {
+        console.log('✅ Existing user logged in:', { id: existingUsers[0].id, email: existingUsers[0].email })
+      }
+    } catch (error) {
+      console.error('❌ Error creating user in database:', error)
+      // Ne pas bloquer l'authentification en cas d'erreur DB
+    }
+  },
+})

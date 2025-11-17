@@ -66,11 +66,12 @@ Ouvrez le fichier `.env.local` et remplacez les valeurs :
 # Générez un secret aléatoire avec : openssl rand -hex 32
 AUTH0_SECRET='COLLEZ_ICI_LE_RESULTAT_DE_OPENSSL'
 
-# URL de base (localhost en dev)
-AUTH0_BASE_URL='http://localhost:3000'
+# URL de base (localhost en dev) - Variable attendue par @auth0/nextjs-auth0
+APP_BASE_URL='http://localhost:3000'
 
-# Domain Auth0 (depuis le dashboard Auth0)
-AUTH0_ISSUER_BASE_URL='https://dev-xxxxxxxx.us.auth0.com'
+# Domain Auth0 (depuis le dashboard Auth0) - Variable attendue par @auth0/nextjs-auth0
+# Note: Utilisez uniquement le domaine (sans https://)
+AUTH0_DOMAIN='dev-xxxxxxxx.us.auth0.com'
 
 # Client ID et Secret (depuis le dashboard Auth0)
 AUTH0_CLIENT_ID='VOTRE_CLIENT_ID'

@@ -6,11 +6,12 @@ import { eq } from 'drizzle-orm'
 // Lazy initialization to avoid build-time errors with environment variables
 const getAuth0Client = () => {
   return new Auth0Client({
-    secret: process.env.AUTH0_SECRET!,
-    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL!,
-    baseURL: process.env.AUTH0_BASE_URL!,
-    clientID: process.env.AUTH0_CLIENT_ID!,
+    // Use correct environment variable names expected by @auth0/nextjs-auth0
+    domain: process.env.AUTH0_DOMAIN || process.env.AUTH0_ISSUER_BASE_URL!,
+    clientId: process.env.AUTH0_CLIENT_ID!,
     clientSecret: process.env.AUTH0_CLIENT_SECRET!,
+    appBaseUrl: process.env.APP_BASE_URL || process.env.AUTH0_BASE_URL!,
+    secret: process.env.AUTH0_SECRET!,
     routes: {
       callback: '/auth/callback',
       postLogoutRedirect: '/auth/signin',
